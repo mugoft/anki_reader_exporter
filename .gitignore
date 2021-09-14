@@ -1,0 +1,12 @@
+# Ignore everything
+./
+
+# Not these directories
+!models/
+!src/
+
+# Not these files
+!lambda_handler.py
+!Dockerfile
+!.gitignore
+!Dockerrun.aws.json

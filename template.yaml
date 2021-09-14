@@ -1,0 +1,51 @@
+# Check https://docs.aws.amazon.com/serverless-application-model/latest/developerguide/sam-resource-function.html
+AWSTemplateFormatVersion: '2010-09-09'
+Transform: AWS::Serverless-2016-10-31
+Description: >
+  anki_reader_exporter
+
+  Sample SAM Template for anki_reader_exporter
+
+# More info about Globals: https://github.com/awslabs/serverless-application-model/blob/master/docs/globals.rst
+Globals:
+  Function:
+    Timeout: 3
+
+Resources:
+  AnkiReaderExporterFunction:
+    Type: AWS::Serverless::Function # More info about Function Resource: https://github.com/awslabs/serverless-application-model/blob/master/versions/2016-10-31.md#awsserverlessfunction
+    Properties:
+      CodeUri: processor/
+      Handler: lambda_handler.handler
+      Runtime: python3.8
+      Timeout: 60
+      MemorySize: 128
+      Policies:
+        - AWSLambdaExecute
+        - AmazonDynamoDBFullAccess #TODO: specify DynamoDB ARN
+      Architectures:
+        - x86_64
+      Layers:
+        - !Ref ApkgReaderLayer
+      Events:
+        S3AnkiCardsEvent:
+          Type: S3
+          Properties:
+            Bucket: !Ref AnkiCardsBucket
+            Events: s3:ObjectCreated:*
+    Metadata:
+      BuildMethod: python3.8
+  AnkiCardsBucket:
+    Type: AWS::S3::Bucket
+  ApkgReaderLayer:
+    Type: AWS::Serverless::LayerVersion
+    Properties:
+      LayerName: apkg-reader-dependencies
+      Description: Dependencies required for app to read and clean apkg files
+      ContentUri: dependencies/
+      CompatibleRuntimes:
+        - python3.7
+        - python3.8
+        - python3.9
+      LicenseInfo: 'MIT'
+      RetentionPolicy: Retain

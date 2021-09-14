@@ -1,12 +1,13 @@
 # Ignore everything
 ./
+.idea/
 
 # Not these directories
-!models/
+!processor/models/
 !src/
 
 # Not these files
-!lambda_handler.py
+!processor/lambda_handler.py
 !Dockerfile
 !.gitignore
 !Dockerrun.aws.json
